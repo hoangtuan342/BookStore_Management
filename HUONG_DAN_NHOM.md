@@ -110,7 +110,11 @@ Nếu dùng SQL Server Express, instance có thể là `localhost\SQLEXPRESS`. L
 dotnet user-secrets set "ConnectionStrings:BookStore" "Server=localhost\SQLEXPRESS;Database=TrangSachDb;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true" --project .\src\BookStore.Api\BookStore.Api.csproj
 ```
 
-Thay `localhost\SQLEXPRESS` theo tên instance trên máy. API dùng Windows Authentication; tài khoản Windows chạy API cần quyền tạo database ở lần đầu. Khi chạy, API tự áp dụng toàn bộ migrations và seed danh mục/sách cùng dữ liệu đơn hàng/phiếu nhập demo. Seeder chạy lặp an toàn và tránh tạo lại bộ đơn demo khi đã tồn tại.
+Thay `localhost\SQLEXPRESS` theo tên instance trên máy. API dùng Windows Authentication; tài khoản Windows chạy API cần quyền tạo database ở lần đầu. Không phải chạy file SQL thủ công: khi API khởi động, nó tự tạo/cập nhật schema bằng toàn bộ EF Core migrations rồi seed dữ liệu ban đầu.
+
+Trên một database mới, các thành viên nhận cùng bộ dữ liệu nền: 4 danh mục, 1 nhà xuất bản, 6 tác giả, 7 chức danh, 6 sách; dữ liệu báo cáo gồm 8 khách demo, 1 nhân viên demo, 1 nhà cung cấp demo, 60 đơn hàng và 25 phiếu nhập. Đơn/phiếu có mã `DEMO-*`; tồn kho được điều chỉnh theo các giao dịch mẫu. Tên, mã, số lượng và trạng thái mẫu được sinh nhất quán từ seeder. Ngày giờ giao dịch được tính lùi từ ngày người đó khởi tạo database lần đầu, nên biểu đồ có cùng phân bố tương đối nhưng ngày lịch cụ thể có thể khác giữa các thành viên. Seeder chạy lặp an toàn và không tạo lại bộ đơn demo nếu đã tìm thấy đơn `DEMO-HD-*`.
+
+Để có bộ dữ liệu mẫu ban đầu, dùng database mới chưa có dữ liệu nghiệp vụ rồi chạy API theo mục 6. Nếu API không thể kết nối SQL Server hoặc không có quyền tạo database, bước khởi tạo sẽ lỗi và API không sẵn sàng. Database cục bộ của từng thành viên độc lập; đăng ký tài khoản khách và tạo tài khoản quản trị viên riêng trên từng máy. Hồ sơ demo do seeder thêm không phải tài khoản đăng nhập.
 
 ### JWT
 
