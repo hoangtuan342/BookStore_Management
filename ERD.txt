@@ -1,0 +1,189 @@
+erDiagram
+    %% ==========================================
+    %% 1. DANH MỤC SÁCH VÀ ĐỐI TÁC
+    %% ==========================================
+    LoaiSach {
+        string MaLoai PK
+        string TenLoai
+    }
+    Sach {
+        string MaSach PK
+        string TenSach
+        int SLCo
+        decimal DGBan
+        string DVTinh
+        string MaLoai FK
+        int IDNhaXuatBan FK
+    }
+    TacGia {
+        int IDTacGia PK
+        string TenTacGia
+        text TieuSu
+    }
+    TacGiaSach {
+        string MaSach PK, FK
+        int IDTacGia PK, FK
+    }
+    NhaXuatBan {
+        int IDNhaXuatBan PK
+        string TenNhaXuatBan
+        string DiaChi
+    }
+    NCC {
+        string MaNCC PK
+        string TenNCC
+        string SoDienThoai
+    }
+
+    %% ==========================================
+    %% 2. TÀI KHOẢN, KHÁCH HÀNG VÀ NHÂN VIÊN
+    %% MatKhauHash lưu giá trị băm, không lưu mật khẩu gốc.
+    %% ==========================================
+    VaiTro {
+        int IDVaiTro PK
+        string TenVaiTro
+    }
+    TaiKhoan {
+        int IDTaiKhoan PK
+        string TenDangNhap UK
+        string MatKhauHash
+        string Email UK
+        string TrangThai
+        int IDVaiTro FK
+    }
+    NV {
+        string MaNV PK
+        string HoLot
+        string Ten
+        date NS
+        string AnhChanDung
+        string DiaChi
+        string TrangThaiTaiKhoan
+        decimal LuongCB
+        int IDTaiKhoan FK, UK
+    }
+    KH {
+        string MaKH PK
+        string HoTen
+        int IDTaiKhoan FK, UK
+        string SoDienThoai
+        string DiaChiGiaoHang
+    }
+
+    %% ==========================================
+    %% 3. NHẬP HÀNG VÀ CHI TIẾT PHIẾU NHẬP
+    %% ==========================================
+    PNH {
+        string MaPNH PK
+        datetime NgayLap
+        string MaNV FK
+        string MaNCC FK
+        decimal TongTien
+    }
+    CTPNH {
+        string MaPNH PK, FK
+        string MaSach PK, FK
+        int SL
+        decimal DG
+        decimal ThanhTien
+    }
+
+    %% ==========================================
+    %% 4. ĐƠN HÀNG VÀ CHI TIẾT ĐƠN HÀNG
+    %% MaNV có thể rỗng với đơn do khách đặt trực tuyến.
+    %% ==========================================
+    HD {
+        string MaHD PK
+        datetime NgayLapHD
+        string MaNV FK "Có thể rỗng với đơn online"
+        string MaKH FK
+        decimal TongTien
+        decimal TongGiamGia
+        string TrangThaiDonHang
+        string TrangThaiThanhToan
+        string PhuongThucThanhToan
+        string DiaChiGiaoHang
+        string SDTNhanHang
+        string MaVoucher FK "Có thể rỗng"
+    }
+    CTHD {
+        string MaHD PK, FK
+        string MaSach PK, FK
+        int SL
+        decimal DG
+        decimal ThanhTien
+    }
+
+    %% ==========================================
+    %% 5. GIỎ HÀNG
+    %% Mỗi khách chỉ có một dòng cho mỗi đầu sách.
+    %% ==========================================
+    GioHang {
+        string MaKH PK, FK
+        string MaSach PK, FK
+        int SoLuong
+    }
+
+    %% ==========================================
+    %% 6. KHUYẾN MÃI VÀ VOUCHER
+    %% ==========================================
+    CTKM {
+        string MaCTKM PK
+        string TenCTKM
+        datetime BeginDate
+        datetime EndDate
+    }
+    KMTheoSach {
+        string MaCTKM PK, FK
+        string MaSach PK, FK
+        decimal PhanTramGiam
+    }
+    KMTheoHD {
+        string MaCTKM PK, FK
+        decimal MucTienHD PK
+        decimal PhanTramGiam
+    }
+    Voucher {
+        string MaVoucher PK
+        string TrangThai
+        datetime HanSuDung
+        int SoLanToiDa
+        int SoLanDaSuDung
+    }
+    KMTheoVoucher {
+        string MaCTKM PK, FK
+        string MaVoucher PK, FK
+        decimal PhanTramGiam
+    }
+
+    %% ==========================================
+    %% 7. CÁC MỐI QUAN HỆ
+    %% ==========================================
+    LoaiSach ||--o{ Sach : "phan_loai"
+    NhaXuatBan ||--o{ Sach : "xuat_ban"
+    Sach ||--o{ TacGiaSach : "duoc_viet_boi"
+    TacGia ||--o{ TacGiaSach : "sang_tac"
+
+    NCC ||--o{ PNH : "cung_cap"
+    NV ||--o{ PNH : "lap_phieu"
+    PNH ||--o{ CTPNH : "co_chi_tiet"
+    Sach ||--o{ CTPNH : "duoc_nhap"
+
+    KH ||--o{ HD : "dat_don"
+    NV o|--o{ HD : "xu_ly_don"
+    HD ||--|{ CTHD : "co_chi_tiet"
+    Sach ||--o{ CTHD : "duoc_ban"
+
+    KH ||--o{ GioHang : "so_huu"
+    Sach ||--o{ GioHang : "nam_trong"
+
+    VaiTro ||--o{ TaiKhoan : "co_vai_tro"
+    TaiKhoan ||--o| NV : "la_nhan_vien"
+    TaiKhoan ||--o| KH : "la_khach_hang"
+
+    CTKM ||--o{ KMTheoSach : "giam_gia_sach"
+    Sach ||--o{ KMTheoSach : "duoc_ap_dung"
+    CTKM ||--o{ KMTheoHD : "giam_gia_don"
+    CTKM ||--o{ KMTheoVoucher : "phat_hanh"
+    Voucher ||--o{ KMTheoVoucher : "thuoc_chuong_trinh"
+    Voucher o|--o{ HD : "duoc_dung_cho_don"

@@ -1,0 +1,21 @@
+**/bin/
+**/obj/
+.vs/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+TestResults/
+*.db
+*.sqlite
+**/appsettings.Local.json
+**/appsettings.*.Local.json
+.env
+.env.*
+*.usersecrets
+*.apk
+/Ảnh Android Studio/
+/Ảnh các lỗi/
+/Ảnh SQLServer/
+/Tài liệu kỹ thuật/~$*
